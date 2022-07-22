@@ -85,4 +85,4 @@ Api文档中主要是介绍函数的名称，作用、参数的名称、作用�
 ### 星期五
 昨天已经基本上把框架搭建完成，今天主要是做一些锦上添花的工作；
 将jsp界面的切换改成了jsp页面的嵌套展示,最后页面展示如下：
-![输入图片说明](https://github.com/Jii796/Spring_hanlp/blob/master/page/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE(17).png "屏幕截图(17).png")
+![输入图片说明](https://github.com/Jii796/Spring_hanlp/blob/master/page/屏幕截图(17).png "屏幕截图(17).png")
