@@ -24,11 +24,11 @@ public class TextClassify
     /**
      * 搜狗文本分类语料库5个类目，每个类目下1000篇文章，共计5000篇文章
      */
-    public static final String CORPUS_FOLDER = TestUtility.ensureTestData("hanlp_rest_data-master", "https://codeload.github.com/Jii796/hanlp_rest_data/zip/refs/heads/master");
+    public static final String CORPUS_FOLDER = TestUtility.ensureTestData("hanlp_rest_data-model", "https://codeload.github.com/Jii796/hanlp_rest_data/zip/refs/heads/model");
     /**
      * 模型保存路径
      */
-    public static final String MODEL_PATH = "data/test/classification-model_for.ser";
+    public static final String MODEL_PATH = "data/test/hanlp_rest_data-model/classification-model_for.ser";
 
 
     public static void main(String[] args) throws IOException
