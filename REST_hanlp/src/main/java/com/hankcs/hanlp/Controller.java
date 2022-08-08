@@ -27,7 +27,8 @@ public class Controller {
     private static final String UNKNOWN="unknown";
     private static final String ERROR="error";
 
-    private static final String ACCESSTOKEN="TEXTCLASSIFYFORHANLP";
+    private static final String TOKEN="Token";
+    private static final String ACCESSTOKEN= "TEXTCLASSIFYFORHANLP";
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
     /**
      * POST请求
@@ -40,27 +41,28 @@ public class Controller {
     @PostMapping(value="/textClassify")
     public Map<String,String> textClassifyControllerPost(HttpServletRequest request,String text,String accessToken) throws IOException {
 
+        boolean flag=AccessToken.getToken(accessToken);
         Map<String,String> map=new HashMap<>();
-        if(text!=null&&accessToken.equals(ACCESSTOKEN)){
-            map.put("Token","OK");
+        if(text!=null&&flag){
+            map.put(TOKEN,"OK");
             text=URLDecoder.decode(text,"UTF-8");
             getRequestHeaders(request);
-            Map<String,Map> textMap= TextClassify.textClassifyController(text);
-            String[] re= (String[]) textMap.get("map1").get("label");
-            Double[] re2=(Double[])textMap.get("map2").get("possibility");
+            Map<String,Map<String,String[]>> textMap= TextClassify.textClassifyController(text);
+            String[] re=  textMap.get("map1").get("label");
+            String[] re2=textMap.get("map2").get("possibility");
             logger.info(text);
             int i=size(re);
             //MultiValueMap map2 = new LinkedMultiValueMap();这个是之前使用的返回类型，但是在客户端获取的时候会出现中括号，因此改为了直接使用Map
             map.put(TYPE[0],stringToInt(re[0]));
-            map.put(TYPE_POSSIBILITY[0],re2[0].toString());
+            map.put(TYPE_POSSIBILITY[0], re2[0]);
             for(int j=1;j<i;j++){
                 map.put(TYPE[j],stringToInt(re[j]));
-                map.put(TYPE_POSSIBILITY[j],re2[j].toString());
+                map.put(TYPE_POSSIBILITY[j], re2[j]);
             }
         }else if(accessToken==null){
-            map.put("Token","null");
-        }else if(!accessToken.equals(ACCESSTOKEN)){
-            map.put("Token",ERROR);
+            map.put(TOKEN,"null");
+        }else if(!flag){
+            map.put(TOKEN,ERROR);
         }else{
             map.put("status",ERROR);
         }
@@ -83,21 +85,21 @@ public class Controller {
         Map<String,String> map=new HashMap<>();
         if(text!=null&&accessToken.equals(ACCESSTOKEN)){
             getRequestHeaders(request);
-            Map<String,Map> textMap= TextClassify.textClassifyController(text);
-            String[] re= (String[]) textMap.get("map1").get("label");
-            Double[] re2=(Double[]) textMap.get("map2").get("possibility");
+            Map<String,Map<String,String[]>> textMap= TextClassify.textClassifyController(text);
+            String[] re= textMap.get("map1").get("label");
+            String[] re2=textMap.get("map2").get("possibility");
             logger.info(text);
             int i=size(re);
             map.put(TYPE[0],stringToInt(re[0]));
-            map.put(TYPE_POSSIBILITY[0],re2[0].toString());
+            map.put(TYPE_POSSIBILITY[0],re2[0]);
             for(int j=1;j<i;j++){
                 map.put(TYPE[j],stringToInt(re[j]));
-                map.put(TYPE_POSSIBILITY[j],re2[j].toString());
+                map.put(TYPE_POSSIBILITY[j], re2[j]);
             }
         }else if(accessToken==null){
-            map.put("Token","null");
+            map.put(TOKEN,"null");
         }else if(!accessToken.equals(ACCESSTOKEN)){
-            map.put("Token",ERROR);
+            map.put(TOKEN,ERROR);
         }else{
             map.put("status",ERROR);
         }
