@@ -64,7 +64,7 @@ public abstract class AbstractClassifier implements IClassifier
         return CollectionUtility.max(scoreMap,len,flag);
     }
     @Override
-    public Map<String, Map> classify(String text, int len, boolean flag, int i) throws IllegalArgumentException, IllegalStateException
+    public Map<String, Map<String,String[]>> classify(String text, int len, boolean flag, int i) throws IllegalArgumentException, IllegalStateException
     {
         Map<String, Double> scoreMap = predict(text);
 
