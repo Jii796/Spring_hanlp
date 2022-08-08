@@ -127,11 +127,11 @@ public class CollectionUtility
         }
         return result;
     }
-    public static Map<String,Map> max(Map<String,Double> scoreMap,int len,Boolean flag,int i){
+    public static Map<String,Map<String,String[]>> max(Map<String,Double> scoreMap,int len,Boolean flag,int i){
         Map<String,String[]> map=new HashMap<>();
         Map<String,String[]> map2=new HashMap<>();
         String [] result=new String[10];
-        
+        String[] possibility=new String[10];
         if(flag==false){
             result=max(scoreMap,len);
         }
@@ -146,6 +146,7 @@ public class CollectionUtility
                     max = score;
                     result[0] = entry.getKey();
                     comp[0]=max;
+                    possibility[0]=String.valueOf(comp[0]);
                 }
             }
             int k;
@@ -160,15 +161,16 @@ public class CollectionUtility
                         max = score;
                         result[j+1] = entry.getKey();
                         comp[j+1]=score;
+                        possibility[j+1]=String.valueOf(comp[j+1]);
                     }
                 }
                 if(comp[j+1]!=null)
                     j+=1;
             }
-            map2.put("possibility",comp);
+            map2.put("possibility",possibility);
         }
         map.put("label",result);
-        Map<String,Map> map3=new HashMap<>();
+        Map<String,Map<String,String[]>> map3=new HashMap<>();
         map3.put("map1",map);
         map3.put("map2",map2);
         return map3;
