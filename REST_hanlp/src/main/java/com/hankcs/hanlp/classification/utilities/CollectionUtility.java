@@ -129,8 +129,9 @@ public class CollectionUtility
     }
     public static Map<String,Map> max(Map<String,Double> scoreMap,int len,Boolean flag,int i){
         Map<String,String[]> map=new HashMap<>();
-        Map<String,Double[]> map2=new HashMap<>();
+        Map<String,String[]> map2=new HashMap<>();
         String [] result=new String[10];
+        
         if(flag==false){
             result=max(scoreMap,len);
         }
@@ -164,7 +165,7 @@ public class CollectionUtility
                 if(comp[j+1]!=null)
                     j+=1;
             }
-            map2.put("prossibility",comp);
+            map2.put("possibility",comp);
         }
         map.put("label",result);
         Map<String,Map> map3=new HashMap<>();
