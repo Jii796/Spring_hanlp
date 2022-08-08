@@ -42,16 +42,15 @@ public class TextClassify
         predict(classifier, "某有限公司一名工人在作业工程中不幸遇难");
         predict(classifier,"东川区应急管理局截至目前未接到安全生产类和自然灾害类的情况报告。");
         predict(classifier,"安全生产");
-        Map<String,Map> result=classifier.classify("安全生产",3,true,1);
-        Double[] r1= (Double[]) result.get("map2").get("possibility");
-        logger.info(String.valueOf(size(r1)));
+        Map<String,Map<String,String[]>> result=classifier.classify("安全生产",3,true,1);
+        String[] r1= (String[]) result.get("map2").get("possibility");
     }
 
-    public static Map<String,Map> textClassifyController(String text) throws IOException {
+    public static Map<String,Map<String,String[]>> textClassifyController(String text) throws IOException {
         IClassifier classifier =new NaiveBayesClassifier(trainOrLoadModel());
         return predictController(classifier,text);
     }
-    public static Map<String, Map> predictController(IClassifier classifier, String text){
+    public static Map<String, Map<String,String[]>> predictController(IClassifier classifier, String text){
         return classifier.classify(text,3,true,1);
     }
     private static void predict(IClassifier classifier, String text)
