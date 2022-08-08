@@ -107,7 +107,7 @@ public interface IClassifier
      * @throws IllegalArgumentException
      * @throws IllegalStateException
      */
-    Map<String,Map> classify(String text, int len,boolean flag ,int i) throws IllegalArgumentException, IllegalStateException;
+    Map<String,Map<String,String[]>> classify(String text, int len,boolean flag ,int i) throws IllegalArgumentException, IllegalStateException;
     /**
      * 预测最可能的分类
      * @param document 一个结构化的文档(注意!这是一个底层数据结构,请谨慎操作)
