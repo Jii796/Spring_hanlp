@@ -44,10 +44,10 @@ public class Controller {
      */
     @PostMapping(value = "/textClassify")
     public MultiValueMap<String, String> textClassifyControllerPost(HttpServletRequest request, String text, String accessToken) throws IOException {
-        MultiValueMap<String, String> map2 = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         boolean flag = AccessToken.getToken(accessToken);
         if (text != null && flag) {
-            map2.add(TOKEN, "OK");
+            map.add(TOKEN, "OK");
             text = URLDecoder.decode(text, "UTF-8");
             getRequestHeaders(request);
             Map<String, Map<String, String[]>> textMap = TextClassify.textClassifyController(text);
@@ -56,20 +56,20 @@ public class Controller {
             logger.info(text);
             int i = size(re);
             //MultiValueMap map2 = new LinkedMultiValueMap();这个是之前使用的返回类型，但是在客户端获取的时候会出现中括号，因此改为了直接使用Map
-            map2.add(TYPE[0], stringToInt(re[0]));
-            map2.add(TYPE_POSSIBILITY[0], re2[0]);
+            map.add(TYPE[0], stringToInt(re[0]));
+            map.add(TYPE_POSSIBILITY[0], re2[0]);
             for (int j = 1; j < i; j++) {
-                map2.add(TYPE[0], stringToInt(re[j]));
-                map2.add(TYPE_POSSIBILITY[0], re2[j]);
+                map.add(TYPE[0], stringToInt(re[j]));
+                map.add(TYPE_POSSIBILITY[0], re2[j]);
             }
         } else if (accessToken == null) {
-            map2.add(TOKEN, "null");
+            map.add(TOKEN, "null");
         } else if (!flag) {
-            map2.add(TOKEN, ERROR);
+            map.add(TOKEN, ERROR);
         } else {
-            map2.add("status", ERROR);
+            map.add("status", ERROR);
         }
-        return map2;
+        return map;
     }
 
     /**
