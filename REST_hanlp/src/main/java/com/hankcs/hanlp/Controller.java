@@ -1,126 +1,65 @@
-package com.hankcs.hanlp;
-
 import com.hankcs.hanlp.suggest.Suggester;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-/**
- * @author CAKJ
- */
-@RestController
+	@@ -21,14 +19,13 @@
 @SpringBootApplication
 public class Controller {
 
-    private static final String[] TYPE = {"first-type", "second-type", "third-type", "forth-type", "fifth-type", "sixth-type"};
-    private static final String[] TYPE_POSSIBILITY = {"first-type-possibility", "second-type-possibility", "third-type-possibility",
+    private static final String[] TYPE = {"type", "main-type", "secondary-type3", "third-type", "forth-type", "fifth-type", "sixth-type"};
+    private static final String[] TYPE_POSSIBILITY = {"type-possibility", "main-type-possibility", "secondary-type-possibility", "third-type-possibility",
         "forth-type-possibility", "fifth-type-possibility", "sixth-type-possibility"};
     private static Suggester suggester;
 
     private static final String UNKNOWN = "unknown";
     private static final String ERROR = "error";
+
     private static final String TOKEN = "Token";
     private static final String ACCESSTOKEN = "TEXTCLASSIFYFORHANLP";
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
-
-    /**
-     * POST请求
-     *
-     * @param request     这是接收请求报文
-     * @param text        这是接受到的参数
-     * @param accessToken 接收到的参数
-     * @return 返回一个map类型的结果，存放类型和类型的可能性
+	@@ -43,11 +40,11 @@ public class Controller {
      * @throws IOException 抛出异常
      */
     @PostMapping(value = "/textClassify")
-    public Map<String, String> textClassifyControllerPost(HttpServletRequest request, String text, String accessToken) throws IOException {
-
-        Map<String, String> map = new HashMap<>(10);
-        if (text != null && accessToken.equals(ACCESSTOKEN)) {
-            map.put(TOKEN, "OK");
+    public MultiValueMap<String, String> textClassifyControllerPost(HttpServletRequest request, String text, String accessToken) throws IOException {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        boolean flag = AccessToken.getToken(accessToken);
+        if (text != null && flag) {
+            map.add(TOKEN, "OK");
             text = URLDecoder.decode(text, "UTF-8");
             getRequestHeaders(request);
             Map<String, Map<String, String[]>> textMap = TextClassify.textClassifyController(text);
-            String[] re = textMap.get("map1").get("label");
-            String[] re2 = textMap.get("map2").get("possibility");
+	@@ -56,18 +53,18 @@ public MultiValueMap<String, String> textClassifyControllerPost(HttpServletReque
             logger.info(text);
             int i = size(re);
             //MultiValueMap map2 = new LinkedMultiValueMap();这个是之前使用的返回类型，但是在客户端获取的时候会出现中括号，因此改为了直接使用Map
-            map.put(TYPE[0], stringToInt(re[0]));
-            map.put(TYPE_POSSIBILITY[0], re2[0]);
+            map.add(TYPE[0], stringToInt(re[0]));
+            map.add(TYPE_POSSIBILITY[0], re2[0]);
             for (int j = 1; j < i; j++) {
-                map.put(TYPE[j], stringToInt(re[j]));
-                map.put(TYPE_POSSIBILITY[j], re2[j]);
+                map.add(TYPE[0], stringToInt(re[j]));
+                map.add(TYPE_POSSIBILITY[0], re2[j]);
             }
         } else if (accessToken == null) {
-            map.put(TOKEN, "null");
-        } else if (!accessToken.equals(ACCESSTOKEN)) {
-            map.put(TOKEN, ERROR);
+            map.add(TOKEN, "null");
+        } else if (!flag) {
+            map.add(TOKEN, ERROR);
         } else {
-            map.put("status", ERROR);
+            map.add("status", ERROR);
         }
         return map;
     }
-
-    /**
-     * get
-     *
-     * @param request     接受到的请求报文
-     * @param text        接受到的参数
-     * @param accessToken 接收到的参数
-     * @return 返回一个map类型，存放的是类型和类型的可能性
-     * @throws IOException 抛出异常
-     */
-    @ResponseBody
-    @GetMapping(path = "/textClassify/{text}/{accessToken}")
-    public Map<String, String> textClassifyControllerGet(HttpServletRequest request,
-                                                         @PathVariable(value = "text") String text,
-                                                         @PathVariable(value = "accessToken") String accessToken) throws IOException {
-        Map<String, String> map = new HashMap<>(10);
-        if (text != null && accessToken.equals(ACCESSTOKEN)) {
-            getRequestHeaders(request);
+	@@ -92,6 +89,7 @@ public Map<String, String> textClassifyControllerGet(HttpServletRequest request,
             Map<String, Map<String, String[]>> textMap = TextClassify.textClassifyController(text);
             String[] re = textMap.get("map1").get("label");
             String[] re2 = textMap.get("map2").get("possibility");
-
             logger.info(text);
             int i = size(re);
             map.put(TYPE[0], stringToInt(re[0]));
-            map.put(TYPE_POSSIBILITY[0], re2[0]);
-            for (int j = 1; j < i; j++) {
-                map.put(TYPE[j], stringToInt(re[j]));
-                map.put(TYPE_POSSIBILITY[j], re2[j]);
-            }
-        } else if (accessToken == null) {
-            map.put(TOKEN, "null");
-        } else if (!accessToken.equals(ACCESSTOKEN)) {
-            map.put(TOKEN, ERROR);
-        } else {
-            map.put("status", ERROR);
-        }
-        return map;
-    }
-
-    /**
-     * 通过该方法获得输入文本的推荐文本
-     * get
-     *
-     * @param keyword 输入的参数
-     * @return 返回一个map，存放的是关键字以及和关键字匹配的一段文本
-     */
-    @GetMapping(path = "/textSuggest/{text}")
-    public Map<String, String> textSuggestController(@PathVariable(value = "text") String keyword) {
-        Map<String, String> map = new HashMap<>(10);
-        String suggestResult = suggester.suggest(keyword, 1).get(0);
-        map.put("keyword", keyword);
-        map.put("similar text", suggestResult);
+	@@ -126,6 +124,23 @@ public Map<String, String> textSuggestController(@PathVariable(value = "text") S
         return map;
     }
 
